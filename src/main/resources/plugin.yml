@@ -1,0 +1,12 @@
+name: DynamicSleeping
+version: 1.0-ALPHA
+main: dev.timecoding.dynamicsleeping.DynamicSleeping
+authors: [ TimeCoding ]
+description: Adds an Dynamic Sleeping Animation to the game!
+website: timecoding.de
+
+commands:
+  dynamicsleeping:
+    aliases:
+      - dyns
+    description: "Use this command to reload the configuration file of the plugin DynamicSleeping!"

@@ -1,0 +1,201 @@
+#########################################################################################################################
+# ██████╗░██╗░░░██╗███╗░░██╗░█████╗░███╗░░░███╗██╗░█████╗░░██████╗██╗░░░░░███████╗███████╗██████╗░██╗███╗░░██╗░██████╗░ #
+# ██╔══██╗╚██╗░██╔╝████╗░██║██╔══██╗████╗░████║██║██╔══██╗██╔════╝██║░░░░░██╔════╝██╔════╝██╔══██╗██║████╗░██║██╔════╝░ #
+# ██║░░██║░╚████╔╝░██╔██╗██║███████║██╔████╔██║██║██║░░╚═╝╚█████╗░██║░░░░░█████╗░░█████╗░░██████╔╝██║██╔██╗██║██║░░██╗░ #
+# ██║░░██║░░╚██╔╝░░██║╚████║██╔══██║██║╚██╔╝██║██║██║░░██╗░╚═══██╗██║░░░░░██╔══╝░░██╔══╝░░██╔═══╝░██║██║╚████║██║░░╚██╗ #
+# ██████╔╝░░░██║░░░██║░╚███║██║░░██║██║░╚═╝░██║██║╚█████╔╝██████╔╝███████╗███████╗███████╗██║░░░░░██║██║░╚███║╚██████╔╝ #
+#╚═════╝░░░░╚═╝░░░╚═╝░░╚══╝╚═╝░░╚═╝╚═╝░░░░░╚═╝╚═╝░╚════╝░╚═════╝░╚══════╝╚══════╝╚══════╝╚═╝░░░░░╚═╝╚═╝░░╚══╝░╚═════╝░  #
+#########################################################################################################################
+# Made by TimeCode @ 2023   #
+# Plugin-Version: 1.0-ALPHA #
+#       (07.01.2023)        #
+############################################################################################################
+# If you got an error or found a bug (or if you have wishes), join my discord: https://discord.gg/mf9JNrzh #
+############################################################################################################
+
+#Set this to "false" if you want to keep this plugin disabled
+Enabled: true
+
+#Set the minimum sleeping and waking up world time
+#YOU CAN FIND ALL Minecraft DAY/NIGHT TICK-NUMBERS HERE: https://bit.ly/3WOA1wE
+WorldTime:
+  #Set the minimum time in which you are able to sleep
+  TimeToSleep:
+    #Set this to "false" if you want to use the default Minecraft sleeping condition
+    Enabled: true
+    #Set the minimum world time (you can find all here: https://bit.ly/3WOA1wE)
+    Ticks: 13000
+  #Set the time in which the player isn't able anymore to sleep | THIS OPTION WON'T WORK IF YOU ENABLED THE OPTION AUTOANIMATION
+  #(I do not recommend to enable this)
+  TooLateForSleep:
+    #Set this to "false" if you want to use the default Minecraft sleeping condition
+    Enabled: false
+    #Set the "too late" world time (you can find all here: https://bit.ly/3WOA1wE)
+    Ticks: 23000
+  #Set the maximum time which the dynamic sleep animation can reach
+  TimeToWakeUp:
+    #Set this to "false" if you want to use the default Minecraft waking up condition
+    Enabled: true
+    #Set the "wake up" world time (you can find all here: https://bit.ly/3WOA1wE)
+    Ticks: 2000
+
+#Change the options for the dynamic sleep animation
+#Information: The dynamic sleep animation will start if the "WorldTime.TimeToSleep.Ticks" is reached and your
+#custom amount of players sleep (in amount or in percentage) and will end if the "WorldTime.TimeToWakeUp.Ticks" is reached
+#or noone is sleeping anymore
+Animation:
+  #The default speed which should be used if no custom speed exists or you've enabled the option "AutoAnimation"
+  DefaultSpeed:
+    #Enable this ("true") if you want to use this speed/ticks if no custom animation exists
+    #The animation will (if this option is enabled) play until it reached "WorldTime.TimeToWakeUp.Ticks"
+    #(RECOMMENDED TO DISABLE)
+    #IF AUTOANIMATION IS ENABLED THIS FUNCTION WILL AUTOMATICLY GET ENABLED
+    AutoAnimation: false
+    #If this is "true" this speed/ticks will get applied after one player sleep
+    #and will end if "WorldTime.TimeToWakeUp.Ticks" is reached
+    #(if a custom dynamic animations exists, which increases the speed of this default,
+    #then this needs to be enabled)
+    StartWhenSleep: false
+    #Set the progression ticks IN WORLD TICKS (https://bit.ly/3WOA1wE)...
+    Speed: 5
+    #...which gets added to your current world time EVERY ...(CHANGE BELOW)... ticks
+    #IMPORTANT: 20 ticks = 1 second
+    PerTicks: 20
+  #This is one of the most important options in this config!
+  Custom:
+    #THIS IS JUST AN EXAMPLE: YOU CAN COPY THIS EXAMPLE AND PASTE IT BELOW THE 1 WITH THE NEXT NUMBER
+    #TO CREATE A NEW CUSTOM DYNAMIC ANIMATION AT A SPECIFIC PLAYER PERCENTAGE/AMOUNT
+    "1":
+      #The IF statement! | IMPORTANT: you can only put in this field the AMOUNT of players (USE THIS EXAMPLE: "20") which must
+      #sleep or the PERCENTAGE of the onlineplayers which must sleep (USE THIS EXAMPLE: "20%" | the percentage MUST contain a % after the percentage).
+      #(Information: if you're using this field for the amount of players you could add an "/" and the number of players which need EXACTLY to be online (for example 10)
+      #(Example: I want that the speed will change if 2 of EXACTLY 10 players are sleeping (SOLUTION: Change the field to If: "2/10"))
+      If: "1"
+      #Example: my If amount is 2 players and if 3 are online (and NO OTHER Custom dynamic animation exists) and THIS option is ENABLED ("true")
+      #THIS custom animation won't work anymore
+      Exactly: false
+      #Enable this if you want that the events will get triggered every time a new player sleeps (or a new player sleeps and another leaves)
+      #I DO NOT RECOMMEND TO CHANGE THIS
+      EveryTime: true
+      #This will increase the speed/ticks of the "DefaultSpeed.Speed/Ticks"
+      #IMPORTANT: THIS WILL ONLY WORK IF "DefaultSpeed.StartAsDefault" is ENABLED ("true")
+      Increase:
+        #Set this to "true" if you want to enable it
+        Enabled: true
+        #Increase with SpeedNumber (for example "10" | This world ticks will be added every ...ticks below...)
+        #or Percentage (for example "10%" | THERE NEED TO BE A "%" AFTER THE PERCENTAGE!)
+        AddSpeed: "0"
+        #Increase with TickNumber (for example "10" | This world ticks will be added every ...ticks below...)
+        #or Percentage (for example "10%" | THERE NEED TO BE A "%" AFTER THE PERCENTAGE!)
+        AddTicks: "10%"
+      #IMPORTANT: THIS OPTION WILL ONLY WORK IF the option INCREASE IS DISABLED
+      #If the IF statement is valid, the speed will get changed to this:
+      #Set the progression ticks IN WORLD TICKS (https://bit.ly/3WOA1wE)...
+      Speed: 10
+      #IMPORTANT: THIS OPTION WILL ONLY WORK IF the option INCREASE IS DISABLED
+      #...which gets added to your current world time EVERY ...(CHANGE BELOW)... ticks
+      #IMPORTANT: 20 ticks = 1 second
+      PerTicks: 5
+    "2":
+      If: "2"
+      Exactly: false
+      EveryTime: true
+      Increase:
+        Enabled: true
+        AddSpeed: "0"
+        AddTicks: "10%"
+      Speed: 10
+      PerTicks: 5
+    "3":
+      If: "10"
+      Exactly: false
+      EveryTime: true
+      Increase:
+        Enabled: true
+        AddSpeed: "0"
+        AddTicks: "10%"
+      Speed: 10
+      PerTicks: 5
+
+#Set the messages which should be sended (you can use colorcodes: &COLORCODE)
+Messages:
+  #This message will be sended if the player cant sleep anymore
+  #IMPORTANT: TooLateForSleep Must be enabled OR BlockSleepingResults must be enabled
+  #Placeholders: %world%, %player% (which will receive the message)
+  TooLateForSleep: "&aHey! &eSorry, but it's too late for sleeping right now..."
+  #This message will be sended if the player are not able to sleep right now
+  #IMPORTANT: ONLY IF SleepOptions.IgnoreMonstersOrOther is disabled and BlockSleepingResults is enabled
+  #Placeholders: %world%, %player% (which will receive the message), %case_lowercase%, %case_uppercase%
+  NotAble: "&cYou're not able to sleep right now!"
+
+  #IMPORTANT: THE FOLLOWING MESSAGES (WHICH YOU CAN CHANGE) WILL BE SENDED TO ALL ONLINE PLAYERS IN THE WORLD
+
+  #This message will get send if players won't be able to sleep anymore
+  #IMPORTANT: TooLateForSleep Must be enabled
+  TooLateForAll:
+    #Enable this with "true"
+    Enabled: false
+    #Placeholders: %world%, %player% (which will receive the message)
+    Message: "&aAll players in world &c%world% &4aren't able to sleep anymore!"
+  #This message will get send if players are able to sleep
+  TimeToSleep:
+    #Enable this with "true"
+    Enabled: false
+    #Placeholders: %world%, %player% (which will receive the message)
+    Message: "&aAll players in world &c%world% &aare able to sleep now!"
+  #This message will get send if players are able to wake up
+  TimeToWakeUp:
+    #Enable this with "true"
+    Enabled: false
+    #Placeholders: %world%, %player% (which will receive the message)
+    Message: "&eIt's time to wake up for all players in the world &c%world%"
+  #This message will get send if the time gets modified using the Custom Event
+  IncreaseEvent:
+    #Enable this with "true"
+    Enabled: false
+    #Placeholders: %ticks%, %speed%, %world%, %player% (which will receive the message)
+    #Will get send if the Custom INCREASE-Setting was used for this event
+    Message1: "&eThe speed in world &c%world% &ewas increased by &c%speed% &eand the ticks by &c%ticks%"
+    #Will get send if the Custom NORMAL/SET-Setting was used for this event
+    Message2: "&eThe speed in world &c%world% &ewas set to &c%speed% &eand the ticks was set to &c%ticks%"
+
+
+#Set the sleeping "results" where the dynamic sleeping event should get triggered
+#You can find all types here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/event/player/PlayerBedEnterEvent.BedEnterResult.html
+#DEFAULT: "OK"
+#IMPORTANT: This settings will influence "WorldTime.TimeToSleep"
+SleepingResults:
+  - "OK"
+
+#The sleeping options
+SleepOptions:
+  #If you enable this, the Sleeping results above won't work anymore and the plugin will use his own
+  #(customized on your settings based on "WorldTime" (first setting))
+  BlockSleepingResults: true
+  #If you enable this, the player is able to sleep, also if monsters are in the near (or player is too far away, ...)
+  #Important: BlockSleepingResults must be enabled
+  IgnoreMonstersOrOther: true
+  #If you enable this, the player can't leave the bed until the animation is finished
+  KeepPlayerInBed: true
+
+#Set the worlds, where the plugin won't work anymore
+WorldBlacklist:
+  #Set this to "true" to enable it
+  Enabled: false
+  #Decide if your blacklist should turn to a whitelist
+  ToWhitelist: false
+  #Change the blacklisted/whitelisted worlds
+  Worlds:
+    - "world_the_end"
+    - "world_the_nether"
+
+#Set the permission for the command /dynamicsleeping reload
+Command-Permission: dyns.reload
+
+#"bStats is a free and open source website that helps the developer to collect usage data from his plugin" (Source: bstats.org)
+#If you don't want to send me automatic statistics, disable this with changing it to "false"
+bStats: true
+
+#DON'T CHANGE THIS
+#AFTER CHANGING THIS CONFIG WON'T EXIST ANYMORE
+config-version: 1.0
