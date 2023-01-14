@@ -7,9 +7,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class DynamicScheduler {
 
@@ -84,8 +82,6 @@ public class DynamicScheduler {
                 world.setTime(updated);
                 if(autodisable){
                     if(!plugin.canStartAnimation(world)){
-                        getTask(name).cancel();
-                        removeTask(name);
                         if(messageEnabled("TimeToWakeUp")) {
                             for (Player all : world.getPlayers()) {
                                 all.sendMessage(getMessage(all, "TimeToWakeUp"));
@@ -94,14 +90,28 @@ public class DynamicScheduler {
                         savedSpeed.remove(name);
                         savedTick.remove(name);
                         plugin.getListener().getAsDefaultIsRunning().remove(world);
-                        if(plugin.getListener().getIsEveryTime().containsKey(custom)){
-                            plugin.getListener().getIsEveryTime().remove(custom);
-                        }
+                        removeAllCustomsFromWorld(world);
+                        getTask(name).cancel();
+                        removeTask(name);
                     }
                 }
             }
         } ,0, ticks);
         addTask(name, task);
+    }
+
+    public void removeAllCustomsFromWorld(World w){
+        HashMap<String, World> map = plugin.getListener().getIsEveryTime();
+        Set<Map.Entry<String, World>> entrySet = map.entrySet();
+        Iterator<Map.Entry<String, World>> itr = entrySet.iterator();
+        while(itr.hasNext()){
+            Map.Entry<String, World> entry = itr.next();
+            String key = entry.getKey();
+            World value = entry.getValue();
+            if(value.equals(w)){
+                itr.remove();
+            }
+        }
     }
 
     private List<Player> sended = new ArrayList<>();

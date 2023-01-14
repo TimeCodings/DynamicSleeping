@@ -23,7 +23,7 @@ public class ConfigHandler {
 
     private boolean retry = false;
 
-    private String newconfigversion = "1.0";
+    private String newconfigversion = "1.0.1";
 
     public void init() {
         plugin.saveDefaultConfig();

@@ -2,6 +2,7 @@ package dev.timecoding.dynamicsleeping;
 
 import dev.timecoding.dynamicsleeping.api.DynamicScheduler;
 import dev.timecoding.dynamicsleeping.api.Metrics;
+import dev.timecoding.dynamicsleeping.api.UpdateChecker;
 import dev.timecoding.dynamicsleeping.api.variables.DynamicCustom;
 import dev.timecoding.dynamicsleeping.command.DynamicCommand;
 import dev.timecoding.dynamicsleeping.command.completer.DynamicCompleter;
@@ -11,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -24,6 +26,7 @@ public final class DynamicSleeping extends JavaPlugin {
     private DynamicScheduler dynamicScheduler;
     private DynamicListener listener;
     private Metrics metrics;
+    private UpdateChecker updateChecker;
 
     @Override
     public void onEnable() {
@@ -32,6 +35,7 @@ public final class DynamicSleeping extends JavaPlugin {
         this.configHandler.init();
         if(this.configHandler.getBoolean("Enabled")) {
             sender.sendMessage("§eDynamicSleeping §cv" + this.getDescription().getVersion() + " §agot enabled!");
+            this.updateChecker = new UpdateChecker(this, 107265);
             this.dynamicScheduler = new DynamicScheduler(this);
             this.dynamicScheduler.runAutoAnimationChecker();
 
@@ -40,16 +44,34 @@ public final class DynamicSleeping extends JavaPlugin {
             }
 
             this.listener = new DynamicListener(this);
-
             PluginManager pluginManager = this.getServer().getPluginManager();
             pluginManager.registerEvents(this.listener, this);
 
             PluginCommand command = this.getCommand("dynamicsleeping");
             command.setExecutor(new DynamicCommand(this));
             command.setTabCompleter(new DynamicCompleter(this));
+
+            try {
+                if (this.updateChecker.checkForUpdates()) {
+                    sender.sendMessage("");
+                    sender.sendMessage("§aA newer version of this plugin is already available! §e(Version §c" + this.updateChecker.getLatestVersion() + "§e)");
+                    sender.sendMessage("§aFor the best experience download it here: §ehttps://www.spigotmc.org/resources/dynamic-sleeping-alpha.107265/");
+                    sender.sendMessage("");
+                } else {
+                    sender.sendMessage("§cNo update found! You're ready to go :)");
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }else{
             sender.sendMessage("§cThe plugin got disabled, because someone disabled the plugin in the config.yml!");
             Bukkit.getPluginManager().disablePlugin(this);
+        }
+    }
+
+    public void onDisable(){
+        for(Player all : Bukkit.getOnlinePlayers()){
+            all.setSleepingIgnored(true);
         }
     }
 

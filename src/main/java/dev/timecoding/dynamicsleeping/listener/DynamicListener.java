@@ -44,87 +44,102 @@ public class DynamicListener implements Listener {
 
         World w = p.getWorld();
         List<String> results = configHandler.getConfig().getStringList("SleepingResults");
+        boolean atSleeping = configHandler.getBoolean("CountVanishedPlayer.AtSleeping");
+        Integer online = getOnlinePlayers(w);
         if(!onBlacklist(w)) {
             if (blocksleepingresults || !blocksleepingresults && results.contains(e.getBedEnterResult().toString())) {
                 if (blocksleepingresults && !configHandler.getBoolean("SleepOptions.IgnoreMonstersOrOther") && e.getBedEnterResult() != PlayerBedEnterEvent.BedEnterResult.OK) {
                     p.sendMessage(replaceDefaultPlaceholders(configHandler.getString(messagebase + "NotAble"), p).replace("%case_lowercase%", e.getBedEnterResult().toString().toLowerCase()).replace("%case_uppercase%", e.getBedEnterResult().toString().toUpperCase()));
                 } else {
                     if (plugin.canStartAnimation(w)) {
-                        if(blocksleepingresults){
+                        if (blocksleepingresults) {
                             e.setCancelled(true);
                             e.setUseBed(Event.Result.ALLOW);
                         }
-                        Integer enda = 1000;
-                        if (worldTimeEnabled("TimeToWakeUp")) {
-                            enda = worldTimeTicks("TimeToWakeUp");
-                        }
-                        Integer online = p.getWorld().getPlayers().size();
-                        List<String> customs = plugin.filterCustomNames();
-                        if (!isSleeping.contains(p)) {
-                            isSleeping.add(p);
-                        }
-                        for (String custom : customs) {
-                            DynamicCustom customOption = plugin.getCustom(custom);
-                            if (customOption.isEverytime() || !customOption.isEverytime() && !isEveryTime.containsKey(custom)) {
-                                if (!customOption.isEverytime() && !isEveryTime.containsKey(custom)) {
-                                    isEveryTime.put(custom, w);
-                                }
-                                IfType ifType = customOption.getIfOption().getType();
-                                Integer amount = getAmountWithOption(online, customOption);
-                                Integer finalamount = 0;
-                                if (ifType == IfType.PERCENTAGE) {
-                                    finalamount = calculatePlayerPercentage(online, customOption.getIfOption().getPercentage());
-                                }
-                                Integer needonline = 0;
-                                Integer aresleeping = getPlayerSleepingInWorld(w);
-                                if (customOption.getIfOption().getSplittedAmount().size() > 1) {
-                                    needonline = customOption.getIfOption().getSplittedAmount().get(1);
-                                }
-                                if (ifType == IfType.AMOUNT && amount == aresleeping && customOption.isExactly() || ifType == IfType.AMOUNT && aresleeping >= amount && !customOption.isExactly() || ifType == IfType.PERCENTAGE && aresleeping >= finalamount && !customOption.isExactly() || ifType == IfType.PERCENTAGE && aresleeping == finalamount && customOption.isExactly() || ifType == IfType.AMOUNTSPLITTED && aresleeping == amount && needonline == online) {
-                                    String base = "Animation.Custom." + custom + ".Increase.";
-                                    Integer speed = getAmountOnIncreaseOption(getIncreaseSpeedBase(w), customOption.getIncreaseSpeedOption());
-                                    Integer perticks = getAmountOnIncreaseOption(getIncreaseTickBase(w), customOption.getIncreaseTicksOption());
+                        if (atSleeping && isVanished(p) || !isVanished(p)) {
+                            Integer enda = 1000;
+                            if (worldTimeEnabled("TimeToWakeUp")) {
+                                enda = worldTimeTicks("TimeToWakeUp");
+                            }
+                            List<String> customs = plugin.filterCustomNames();
+                            if (!isSleeping.contains(p)) {
+                                isSleeping.add(p);
+                            }
+                            for (String custom : customs) {
+                                DynamicCustom customOption = plugin.getCustom(custom);
+                                if (customOption.isEverytime() || !customOption.isEverytime() && !isEveryTime.containsKey(custom)) {
+                                    if (!customOption.isEverytime() && !isEveryTime.containsKey(custom)) {
+                                        isEveryTime.put(custom, w);
+                                    }
+                                    IfType ifType = customOption.getIfOption().getType();
+                                    Integer amount = getAmountWithOption(online, customOption);
+                                    Integer finalamount = 0;
+                                    if (ifType == IfType.PERCENTAGE) {
+                                        finalamount = calculatePlayerPercentage(online, customOption.getIfOption().getPercentage());
+                                    }
+                                    Integer needonline = 0;
+                                    Integer aresleeping = getPlayerSleepingInWorld(w);
+                                    if (customOption.getIfOption().getSplittedAmount().size() > 1) {
+                                        needonline = customOption.getIfOption().getSplittedAmount().get(1);
+                                    }
+                                    if (ifType == IfType.AMOUNT && amount == aresleeping && customOption.isExactly() || ifType == IfType.AMOUNT && aresleeping >= amount && !customOption.isExactly() || ifType == IfType.PERCENTAGE && aresleeping >= finalamount && !customOption.isExactly() || ifType == IfType.PERCENTAGE && aresleeping == finalamount && customOption.isExactly() || ifType == IfType.AMOUNTSPLITTED && aresleeping == amount && needonline == online) {
+                                        String base = "Animation.Custom." + custom + ".Increase.";
+                                        Integer speed = getAmountOnIncreaseOption(getIncreaseSpeedBase(w), customOption.getIncreaseSpeedOption());
+                                        Integer perticks = getAmountOnIncreaseOption(getIncreaseTickBase(w), customOption.getIncreaseTicksOption());
 
-                                    if(messageEnabled("IncreaseEvent")){
-                                        for(Player all : w.getPlayers()){
-                                            if(customOption.isIncreaseEnabled()){
-                                                all.sendMessage(replaceIncrease(getMessage(all, "IncreaseEvent", "Message1"), speed, perticks, p));
-                                            }else{
-                                                all.sendMessage(replaceIncrease(getMessage(all, "IncreaseEvent", "Message2"), speed, perticks, p));
+                                        if (messageEnabled("IncreaseEvent")) {
+                                            for (Player all : w.getPlayers()) {
+                                                if (customOption.isIncreaseEnabled()) {
+                                                    all.sendMessage(replaceIncrease(getMessage(all, "IncreaseEvent", "Message1"), speed, perticks, p));
+                                                } else {
+                                                    all.sendMessage(replaceIncrease(getMessage(all, "IncreaseEvent", "Message2"), speed, perticks, p));
+                                                }
                                             }
                                         }
-                                    }
-                                    if (configHandler.getBoolean(base + "Enabled")) {
-                                        scheduler.runDynamicAnimation(w.getUID().toString(), custom, speed, perticks, time, enda, w, true);
-                                    } else {
-                                        base = "Animation.Custom." + custom + ".";
-                                        scheduler.runDynamicAnimation(w.getUID().toString(), custom, configHandler.getInteger(base + ".Speed"), configHandler.getInteger(base + ".PerTicks"), time, enda, w, true);
+                                        if (configHandler.getBoolean(base + "Enabled")) {
+                                            scheduler.runDynamicAnimation(w.getUID().toString(), custom, speed, perticks, time, enda, w, true);
+                                        } else {
+                                            base = "Animation.Custom." + custom + ".";
+                                            scheduler.runDynamicAnimation(w.getUID().toString(), custom, configHandler.getInteger(base + ".Speed"), configHandler.getInteger(base + ".PerTicks"), time, enda, w, true);
+                                        }
                                     }
                                 }
                             }
-                        }
-                        if (configHandler.getBoolean("Animation.DefaultSpeed.StartWhenSleep")) {
-                            String base = "Animation.DefaultSpeed.";
-                            if (!asDefaultIsRunning.contains(w) && !scheduler.taskExists(w.getUID().toString())) {
-                                asDefaultIsRunning.add(w);
-                                scheduler.runDynamicAnimation(w.getUID().toString(), "", configHandler.getInteger(base + "Speed"), configHandler.getInteger(base + "PerTicks"), time, enda, w, true);
+                            if (configHandler.getBoolean("Animation.DefaultSpeed.StartWhenSleep")) {
+                                String base = "Animation.DefaultSpeed.";
+                                if (!asDefaultIsRunning.contains(w) && !scheduler.taskExists(w.getUID().toString())) {
+                                    asDefaultIsRunning.add(w);
+                                    scheduler.runDynamicAnimation(w.getUID().toString(), "", configHandler.getInteger(base + "Speed"), configHandler.getInteger(base + "PerTicks"), time, enda, w, true);
+                                }
                             }
+                        }else if(isVanished(p)){
+                            e.setCancelled(false);
+                            e.setUseBed(Event.Result.ALLOW);
                         }
-                    } else if (blocksleepingresults) {
-                        e.setCancelled(true);
-                        p.sendMessage(replaceDefaultPlaceholders(configHandler.getString(messagebase + ".TooLateForSleep"), p));
-                    }
+                        } else if (blocksleepingresults) {
+                            e.setCancelled(true);
+                            p.sendMessage(replaceDefaultPlaceholders(configHandler.getString(messagebase + ".TooLateForSleep"), p));
+                        }
                 }
             }
         }
     }
 
+    public List<Player> getIsSleeping() {
+        return isSleeping;
+    }
+
     @EventHandler
     public void onPlayerBedLeave(PlayerBedLeaveEvent e){
         Player p = e.getPlayer();
-        isSleeping.remove(p);
-        if(!onBlacklist(p.getWorld()) && plugin.canStartAnimation(p.getWorld()) && configHandler.getBoolean("SleepOptions.KeepPlayerInBed")){
-            e.setCancelled(true);
+        boolean atSleeping = configHandler.getBoolean("CountVanishedPlayer.AtSleeping");
+        if(atSleeping && isVanished(p) || !isVanished(p)) {
+            if (!onBlacklist(p.getWorld()) && plugin.canStartAnimation(p.getWorld()) && configHandler.getBoolean("SleepOptions.KeepPlayerInBed")) {
+                e.setCancelled(true);
+            }
+        }
+        if(!e.isCancelled()){
+            isSleeping.remove(p);
         }
     }
 
@@ -233,6 +248,34 @@ public class DynamicListener implements Listener {
                 break;
         }
         return integer;
+    }
+
+    public Integer getOnlinePlayers(World world){
+        Integer online = world.getPlayers().size();
+        if(!configHandler.getBoolean("CountVanishedPlayer.AsOnline")) {
+            for (Player all : world.getPlayers()) {
+                    Integer decrease = 0;
+                    boolean gotit = false;
+                    for (Player players : world.getPlayers()) {
+                        if (!players.equals(all) && !players.canSee(all) && !gotit) {
+                            decrease++;
+                            gotit = true;
+                        }
+                    }
+                    online = (online - decrease);
+            }
+        }
+        return online;
+    }
+
+    public boolean isVanished(Player p){
+        boolean gotit = false;
+        for (Player players : p.getWorld().getPlayers()) {
+            if (!players.equals(p) && !players.canSee(p) && !gotit) {
+                gotit = true;
+            }
+        }
+        return gotit;
     }
 
     public boolean worldTimeEnabled(String s){

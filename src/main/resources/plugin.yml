@@ -1,5 +1,5 @@
 name: DynamicSleeping
-version: 1.0-ALPHA
+version: 1.0.1-ALPHA
 main: dev.timecoding.dynamicsleeping.DynamicSleeping
 authors: [ TimeCoding ]
 description: Adds an Dynamic Sleeping Animation to the game!

@@ -6,9 +6,9 @@
 # ██████╔╝░░░██║░░░██║░╚███║██║░░██║██║░╚═╝░██║██║╚█████╔╝██████╔╝███████╗███████╗███████╗██║░░░░░██║██║░╚███║╚██████╔╝ #
 #╚═════╝░░░░╚═╝░░░╚═╝░░╚══╝╚═╝░░╚═╝╚═╝░░░░░╚═╝╚═╝░╚════╝░╚═════╝░╚══════╝╚══════╝╚══════╝╚═╝░░░░░╚═╝╚═╝░░╚══╝░╚═════╝░  #
 #########################################################################################################################
-# Made by TimeCode @ 2023   #
-# Plugin-Version: 1.0-ALPHA #
-#       (07.01.2023)        #
+#   Made by TimeCode @ 2023   #
+# Plugin-Version: 1.0.1-ALPHA #
+#       (14.01.2023)          #
 ############################################################################################################
 # If you got an error or found a bug (or if you have wishes), join my discord: https://discord.gg/mf9JNrzh #
 ############################################################################################################
@@ -117,6 +117,15 @@ Animation:
       Speed: 10
       PerTicks: 5
 
+#ADDED IN UPDATE ALPHA-1.0.1
+#(THIS FUNCTION WILL ONLY WORK IF MORE THAN ONE PLAYER IS ONLINE)
+CountVanishedPlayer:
+  #Change this to "false" if you doesn't want to count a vanished player as a sleeper
+  #Disabling this feature isn't recommended
+  AtSleeping: true
+  #Change this to "true" if you want to count a vanished player as a OnlinePlayer
+  AsOnline: false
+
 #Set the messages which should be sended (you can use colorcodes: &COLORCODE)
 Messages:
   #This message will be sended if the player cant sleep anymore
@@ -198,4 +207,4 @@ bStats: true
 
 #DON'T CHANGE THIS
 #AFTER CHANGING THIS CONFIG WON'T EXIST ANYMORE
-config-version: 1.0
+config-version: 1.0.1
